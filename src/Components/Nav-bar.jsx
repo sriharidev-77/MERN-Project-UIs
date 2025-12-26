@@ -1,8 +1,10 @@
 import { BrowserRouter, Link, Route, Routes } from "react-router-dom"
-import Login from "./Login"
-import Register from "./Register"
-import ForgotPassword from "./Forget-Password"
-import ResetPassword from "./Reset-Password"
+import CategoryPage from "./CategoryPage";
+import RestaurantLogin from "./log";
+import RestaurantRegister from "./Register";
+import RestaurantForgetPassword from "./Forget-Password";
+import RestaurantResetPassword from "./Reset-Password";
+
 
 
 const Nav_bar = () => {
@@ -13,24 +15,30 @@ const Nav_bar = () => {
 
             <BrowserRouter>
             
-                <nav>
+                <nav className="flex justify-around flex-wrap">
 
-                    <Link to="/login">Login</Link>
+                    <Link to="/">log</Link>
 
                     <Link to="/register">Register</Link>
 
-                    <Link to="/forget-password">Forget Password</Link>
+                    <Link to="/forget-password">Forget-Password</Link>
 
                     <Link to="/reset-password">Reset Password</Link>
+
+                    <Link to="/CategoryPage">CategoryPage</Link>
+
 
                 </nav>
 
                 <Routes>
 
-                    <Route path = "/login" element = {<Login/>}></Route>
-                    <Route path = "/register" element = {<Register/>}></Route>
-                    <Route path = "/forget-password" element = {<ForgotPassword/>}></Route>
-                    <Route path = "/reset-password" element = {<ResetPassword/>}></Route>
+                    <Route path = "/" element = {<RestaurantLogin/>}></Route>
+                    <Route path = "/register" element = {<RestaurantRegister/>}></Route>
+                    <Route path = "/forget-password" element = {<RestaurantForgetPassword/>}></Route>
+                    <Route path = "/reset-password" element = {<RestaurantResetPassword/>}></Route>
+                    <Route path = "/CategoryPage" element = {<CategoryPage/>}></Route>
+                    
+
 
                 </Routes>
                 
@@ -41,4 +49,3 @@ const Nav_bar = () => {
 }
 
 export default Nav_bar
-

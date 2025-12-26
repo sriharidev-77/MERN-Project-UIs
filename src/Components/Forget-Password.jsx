@@ -1,158 +1,326 @@
-import "../assets";
-import { useState } from "react";
+// RestaurantForgetPassword.jsx - PERFECT FOOD SECURITY + 30s TIMER
+import { useState, useEffect } from "react";
+import { 
+  FaLockOpen, 
+  FaKey, 
+  FaFingerprint, 
+  FaLock, 
+  FaEnvelope, 
+  FaCircleCheck 
+} from "react-icons/fa6";
+import { useNavigate } from "react-router-dom";
 
-const ForgotPassword = () => {
+export default function RestaurantForgetPassword() {
+  const [step, setStep] = useState(1);
   const [email, setEmail] = useState("");
-  const [otp, setOtp] = useState(["", "", "", "", "", ""]);
-  const [step, setStep] = useState(1); // 1 = email, 2 = otp
+  const [otp, setOtp] = useState(["", "", "", ""]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [resendTime, setResendTime] = useState(30); // ✅ 30s timer
+  const [canResend, setCanResend] = useState(false); // ✅ Resend disabled initially
+  const [showResendMessage, setShowResendMessage] = useState(false); // ✅ Modern resend message
+  const navigate = useNavigate();
 
-  const handleSendOtp = (e) => {
-    e.preventDefault();
-    if (!email) return;
-    // 🔐 API call goes here
-    setStep(2);
-  };
+  // ✅ SECURITY ICONS - SAME animations as login/register
+  const securityIcons = [
+    { icon: FaLockOpen, pos: "top-20 left-10", anim: "animate-bounce", delay: "-1s", color: "text-indigo-400/50", size: "text-5xl" },
+    { icon: FaKey, pos: "top-32 right-20", anim: "animate-pulse", delay: "-2s", color: "text-emerald-400/40", size: "text-4xl" },
+    { icon: FaFingerprint, pos: "top-1/2 left-8", anim: "animate-spin", delay: "-0.5s", color: "text-purple-500/45", size: "text-6xl" },
+    { icon: FaLock, pos: "bottom-32 right-16", anim: "animate-ping", delay: "-1.5s", color: "text-sky-400/40", size: "text-5xl" },
+    { icon: FaEnvelope, pos: "bottom-20 left-24", anim: "animate-bounce", delay: "-3s", color: "text-amber-400/40", size: "text-4xl" },
+    { icon: FaKey, pos: "top-2/4 right-24", anim: "animate-pulse", delay: "-2.5s", color: "text-rose-400/40", size: "text-5xl" }
+  ];
 
-  const handleOtpChange = (value, index) => {
-    if (!/^[0-9]?$/.test(value)) return;
-
-    const newOtp = [...otp];
-    newOtp[index] = value;
-    setOtp(newOtp);
-
-    // auto focus next
-    if (value && index < otp.length - 1) {
-      document.getElementById(`otp-${index + 1}`)?.focus();
+  // ✅ 30s Resend Timer
+  useEffect(() => {
+    if (step === 2 && resendTime > 0) {
+      const timer = setTimeout(() => setResendTime(resendTime - 1), 1000);
+      return () => clearTimeout(timer);
+    } else if (resendTime === 0) {
+      setCanResend(true);
     }
+  }, [resendTime, step]);
+
+  const handleSendOTP = (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setTimeout(() => {
+      setIsLoading(false);
+      setStep(2);
+      setResendTime(30); // Reset timer
+      setCanResend(false);
+    }, 1500);
   };
 
-  return (
-    <div
-      className="
-        min-h-screen flex items-center justify-center
-        bg-[url('./assets/leaf_2.jpg')]
-        bg-cover bg-center bg-no-repeat
-      "
-    >
-      <div
-        className="
-          w-[90%]
-          xl:w-[40%] md:w-[60%] sm:w-[70%]
-          rounded-2xl backdrop-blur-xl bg-transparent
-          shadow-2xl text-white text-center p-5
-          overflow-hidden
-        "
-      >
-        {/* Title */}
-        <h1
-          className="w-[90%] m-auto
-            p-5 text-4xl font-semibold mb-10
-            bg-linear-to-r from-emerald-400 via-cyan-400 to-sky-400
-            bg-clip-text text-transparent
-            drop-shadow-[0_2px_8px_rgba(0,0,0,0.45)]
-          "
-        >
-          Forgot Password
-        </h1>
+  const handleVerifyOTP = (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setTimeout(() => {
+      setIsLoading(false);
+      setStep(3);
+    }, 1500);
+  };
 
-        {/* ---------------- STEP 1: EMAIL ---------------- */}
-        {step === 1 && (
-          <form onSubmit={handleSendOtp} className="flex flex-col items-center">
-            <p className="mb-6 text-lg font-light">
-              Enter your registered email to receive OTP
-            </p>
+  const handleResendOTP = () => {
+    setResendTime(30);
+    setCanResend(false);
+    setShowResendMessage(true);
+    setTimeout(() => setShowResendMessage(false), 3000); // Hide message after 3s
+  };
 
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="Enter your Email"
-              className="
-                w-full h-14 px-4 mb-8
-                rounded-lg text-black bg-white
-                focus:outline-none focus:ring-2 focus:ring-green-500
-              "
-              required
-            />
+  const goToLogin = () => navigate('/');
 
-            <button className="p-0.5 rounded-full bg-linear-to-br from-green-400 to-blue-600 mb-6">
-              <span className="block px-10 py-3 font-bold text-xl">
-                Send OTP
-              </span>
-            </button>
-          </form>
-        )}
+  // STEP 1: Email Input
+  if (step === 1) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-950 via-sky-950 to-slate-900 flex items-center justify-center px-4 py-8 relative overflow-hidden">
+        <div className="absolute inset-0 pointer-events-none">
+          {securityIcons.map((iconProps, i) => (
+            <div key={i} className={`absolute ${iconProps.pos} ${iconProps.anim} [animation-delay:${iconProps.delay}] opacity-30 ${iconProps.color} ${iconProps.size}`}>
+              <iconProps.icon />
+            </div>
+          ))}
+        </div>
 
-        {/* ---------------- STEP 2: OTP ---------------- */}
-        {step === 2 && (
-          <div>
-            <p className="mb-8 text-lg font-light">
-              Enter the 6-digit OTP sent to
-              <span
-                className="
-                  block mt-2 font-semibold text-black
-                  break-all sm:wrap-break-words
-                "
-              >
-                {email}
-              </span>
-            </p>
+        <div className="relative w-full max-w-6xl z-10">
+          <div className="absolute inset-0 rounded-[2.25rem] bg-gradient-to-tr from-sky-500/20 via-emerald-400/15 to-amber-400/20 blur-3xl" />
+          
+          <div className="relative bg-slate-900/80 border border-white/10 rounded-[2.25rem] overflow-hidden shadow-[0_40px_120px_rgba(0,0,0,0.85)] grid md:grid-cols-2 min-h-[520px]">
+            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(15,23,42,0.25)_0%,rgba(15,23,42,0.9)_60%,rgba(15,23,42,1)_100%)]" />
+            <div className="absolute inset-0 bg-slate-950/90" />
 
-            {/* OTP Inputs (Always One Line) */}
-            <div className="w-full max-w-sm mx-auto mb-10">
-
-              <div className="flex justify-between gap-1 sm:gap-2">
-
-                {otp.map((digit, index) => (
-
-                  <input
-
-                    key={index}
-                    id={`otp-${index}`}
-                    type="text"
-                    inputMode="numeric"
-                    maxLength="1"
-                    value={digit}
-                    onChange={(e) => handleOtpChange(e.target.value, index)}
-                    className="
-                      flex-1 min-w-10
-                      h-12 sm:h-14
-                      text-center text-lg sm:text-xl
-                      font-bold rounded-lg
-                      text-black bg-white
-                      focus:outline-none focus:ring-2 focus:ring-green-500 
-                    "
-                  />
-                ))}
+            {/* ✅ FOOD SECURITY HERO IMAGE */}
+            <div className="relative h-72 md:h-full">
+              <img 
+                src="https://images.pexels.com/photos/1639557/pexels-photo-1639557.jpeg" 
+                alt="Food safety inspection in professional kitchen" 
+                className="h-full w-full object-cover" 
+              />
+              <div className="absolute inset-0 bg-gradient-to-r from-slate-950/85 via-slate-950/70 to-transparent" />
+              <div className="absolute inset-0 flex flex-col justify-between p-8 md:p-10 lg:p-14 text-white">
+                <div className="space-y-4 max-w-md text-center sm:text-left">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                    <p className="inline-flex items-center justify-center rounded-full bg-emerald-500/25 px-3 py-1 text-[11px] uppercase tracking-[0.3em] text-emerald-100 w-[220px] max-w-full self-center sm:w-auto">
+                      Food Safety Certified
+                    </p>
+                    <div className="inline-flex items-center justify-center gap-2 rounded-full bg-slate-900/70 border border-emerald-400/40 px-3 py-1 text-[11px] text-slate-100 shadow-md w-[240px] max-w-full self-center sm:w-auto">
+                      <span className="inline-block h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+                      <span>HACCP Compliant</span>
+                    </div>
+                  </div>
+                  <h1 className="text-3xl mb-6 md:text-4xl lg:text-5xl font-semibold leading-tight">Secure Recovery</h1>
+                  <p className="text-sm md:text-base mb-3 text-slate-100/85">Your account data is protected with restaurant-grade security standards.</p>
+                </div>
+                <div className="space-y-3 hidden sm:block">
+                  <div className="text-[11px] uppercase tracking-[0.35em] text-emerald-200 mb-2">Security Standards</div>
+                  <p className="text-lg font-semibold text-emerald-100">256-bit Encryption</p>
+                </div>
               </div>
             </div>
 
-            <button className="p-0.5 rounded-full bg-linear-to-br from-green-400 to-blue-600">
-              <a href="" className="block px-10 py-3 font-bold text-xl">
-                Verify OTP
-              </a>
-            </button>
+            {/* Email Form */}
+            <div className="relative px-8 py-9 md:px-10 lg:px-14 flex flex-col justify-center">
+              <header className="flex flex-col gap-2 mb-7">
+                <div className="w-12 h-12 bg-emerald-500/20 rounded-2xl flex items-center justify-center mb-4">
+                  <FaLockOpen className="text-2xl text-emerald-400" />
+                </div>
+                <h2 className="text-3xl font-semibold text-slate-50 mb-1">Forgot Password?</h2>
+                <p className="text-sm text-slate-300">Enter your email. We'll send a secure 4-digit OTP to reset your password.</p>
+              </header>
 
-            <p className="mt-6 text-sm font-light">
-              Didn’t receive OTP?
-              <a
-                href=""
-                className="
-                  ml-2
-                  bg-linear-to-r from-emerald-400 via-cyan-400 to-sky-400
-                  bg-clip-text text-transparent
-                  font-bold
-                  border-b-2 border-transparent
-                  hover:border-emerald-400"
+              <form onSubmit={handleSendOTP} className="space-y-5">
+                <div className="space-y-1.5">
+                  <label className="block text-sm font-medium text-slate-100 mb-3 flex items-center gap-2">
+                    <FaEnvelope className="text-emerald-400 text-sm" />
+                    Email Address
+                  </label>
+                  <div className="relative">
+                    <span className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-slate-400">@</span>
+                    <input
+                      type="email"
+                      required
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      className="w-full rounded-xl border border-white/15 bg-slate-900/70 pl-8 pr-3 py-2.5 text-sm text-slate-50 shadow-inner placeholder:text-slate-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400"
+                      placeholder="you@example.com"
+                    />
+                  </div>
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={isLoading}
+                  className="group w-full rounded-xl bg-gradient-to-r from-emerald-400 via-sky-400 to-emerald-500 py-2.5 text-sm font-semibold text-slate-950 shadow-lg hover:shadow-emerald-400/70 hover:-translate-y-0.5 transition-all disabled:opacity-70"
+                >
+                  <span className="flex items-center justify-center gap-2">
+                    {isLoading ? (
+                      <>
+                        <span className="h-4 w-4 border-2 border-slate-900/40 border-t-slate-900 rounded-full animate-spin" />
+                        Sending OTP...
+                      </>
+                    ) : (
+                      <>
+                        Send OTP <span className="text-xs group-hover:translate-x-1 transition-transform">→</span>
+                      </>
+                    )}
+                  </span>
+                </button>
+              </form>
+
+              <p className="mt-6 text-center text-[11px] text-slate-300">
+                Back to <button onClick={goToLogin} className="font-semibold text-emerald-300 hover:text-emerald-200">Sign in</button>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // STEP 2: OTP Input
+  if (step === 2) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-950 via-sky-950 to-slate-900 flex items-center justify-center px-4 py-8 relative overflow-hidden">
+        <div className="absolute inset-0 pointer-events-none">
+          {securityIcons.map((iconProps, i) => (
+            <div key={i} className={`absolute ${iconProps.pos} ${iconProps.anim} [animation-delay:${iconProps.delay}] opacity-30 ${iconProps.color} ${iconProps.size}`}>
+              <iconProps.icon />
+            </div>
+          ))}
+        </div>
+
+        <div className="relative w-full max-w-md z-10">
+          <div className="absolute inset-0 rounded-[2.25rem] bg-gradient-to-tr from-emerald-500/20 via-sky-400/15 to-emerald-400/20 blur-3xl" />
+          
+          <div className="relative bg-slate-900/80 border border-emerald-400/50 rounded-[2.25rem] overflow-hidden shadow-[0_40px_120px_rgba(0,0,0,0.85)] p-10">
+            <div className="text-center mb-8">
+              <div className="w-20 h-20 mx-auto mb-6 bg-emerald-500/20 rounded-3xl flex items-center justify-center border-4 border-emerald-400/50">
+                <FaKey className="text-3xl text-emerald-400" />
+              </div>
+              <h2 className="text-3xl font-semibold text-slate-50 mb-2">Verify OTP</h2>
+              <p className="text-slate-400 mb-2">Enter 4-digit code sent to</p>
+              <p className="font-semibold text-slate-200">{email}</p>
+            </div>
+
+            {/* ✅ RESEND MESSAGE - MODERN UX */}
+            {showResendMessage && (
+              <div className="mb-4 p-3 bg-emerald-500/10 border border-emerald-400/30 rounded-xl backdrop-blur-sm">
+                <div className="flex items-center gap-2 text-sm text-emerald-300">
+                  <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse" />
+                  <span>✅ OTP resent to {email}</span>
+                </div>
+              </div>
+            )}
+
+            <form onSubmit={handleVerifyOTP} className="space-y-6">
+              <div className="grid grid-cols-4 gap-3">
+                {otp.map((digit, index) => (
+                  <input
+                    key={index}
+                    type="text"
+                    maxLength={1}
+                    value={digit}
+                    onChange={(e) => {
+                      const newOtp = [...otp];
+                      newOtp[index] = e.target.value.replace(/[^0-9]/g, '');
+                      setOtp(newOtp);
+                      if (e.target.value && index < 3) {
+                        document.getElementById(`otp-${index + 1}`)?.focus();
+                      }
+                    }}
+                    id={`otp-${index}`}
+                    className="w-full h-16 text-2xl font-bold text-center rounded-xl border-2 border-white/20 bg-slate-900/70 focus:border-emerald-400 focus:outline-none focus:ring-2 focus:ring-emerald-400/50 shadow-inner text-slate-50"
+                  />
+                ))}
+              </div>
+
+              <button
+                type="submit"
+                disabled={isLoading || otp.join("").length !== 4}
+                className="group w-full rounded-xl bg-gradient-to-r from-emerald-400 via-sky-400 to-emerald-500 py-3 text-sm font-semibold text-slate-950 shadow-lg hover:shadow-emerald-400/70 hover:-translate-y-0.5 transition-all disabled:opacity-70"
               >
-                Resend
-              </a>
+                <span className="flex items-center justify-center gap-2">
+                  {isLoading ? (
+                    <>
+                      <span className="h-4 w-4 border-2 border-slate-900/40 border-t-slate-900 rounded-full animate-spin" />
+                      Verifying...
+                    </>
+                  ) : (
+                    <>
+                      Verify OTP <span className="text-xs group-hover:translate-x-1 transition-transform">→</span>
+                    </>
+                  )}
+                </span>
+              </button>
+            </form>
+
+            {/* ✅ 30s COUNTDOWN TIMER + RESEND */}
+            <div className="mt-8 text-center pt-6 border-t border-slate-800">
+              <button 
+                onClick={handleResendOTP}
+                disabled={!canResend}
+                className={`text-sm transition-all ${
+                  canResend 
+                    ? 'text-emerald-400 hover:text-emerald-300 font-semibold flex items-center justify-center gap-2 mx-auto' 
+                    : 'text-slate-500 cursor-not-allowed'
+                }`}
+              >
+                {canResend ? (
+                  <>
+                    <FaEnvelope className="text-sm" />
+                    Resend OTP
+                  </>
+                ) : (
+                  `Resend OTP in ${resendTime}s`
+                )}
+              </button>
+            </div>
+
+            <p className="mt-6 text-center text-[11px] text-slate-300">
+              Back to <button onClick={goToLogin} className="font-semibold text-emerald-300 hover:text-emerald-200">Sign in</button>
             </p>
           </div>
-        )}
+        </div>
+      </div>
+    );
+  }
+
+  // STEP 3: Success (unchanged)
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-emerald-950 to-slate-900 flex items-center justify-center px-4 py-8 relative overflow-hidden">
+      <div className="absolute inset-0 pointer-events-none">
+        {securityIcons.map((iconProps, i) => (
+          <div key={i} className={`absolute ${iconProps.pos} ${iconProps.anim} [animation-delay:${iconProps.delay}] opacity-30 ${iconProps.color} ${iconProps.size}`}>
+            <iconProps.icon />
+          </div>
+        ))}
+      </div>
+
+      <div className="relative w-full max-w-md z-10 text-center">
+        <div className="absolute inset-0 rounded-[2.25rem] bg-gradient-to-tr from-emerald-500/30 via-sky-400/20 to-emerald-400/30 blur-3xl animate-pulse" />
+        
+        <div className="relative bg-slate-900/90 border border-emerald-400/50 rounded-[2.25rem] overflow-hidden shadow-[0_40px_120px_rgba(0,0,0,0.85)] p-12">
+          <div className="w-24 h-24 mx-auto mb-8 bg-emerald-500/20 rounded-3xl flex items-center justify-center border-4 border-emerald-400/50 animate-bounce">
+            <FaCircleCheck className="text-4xl text-emerald-400" />
+          </div>
+          
+          <h2 className="text-3xl font-bold bg-gradient-to-r from-emerald-400 via-sky-400 to-emerald-500 bg-clip-text text-transparent mb-4">
+            Reset Complete!
+          </h2>
+          <p className="text-lg text-slate-300 mb-8 max-w-sm mx-auto">
+            Your password has been reset successfully. You can now sign in with your new password.
+          </p>
+          
+          <button
+            onClick={goToLogin}
+            className="group w-full rounded-xl bg-gradient-to-r from-emerald-400 via-sky-400 to-emerald-500 py-3 text-sm font-semibold text-slate-950 shadow-lg hover:shadow-emerald-400/70 hover:-translate-y-0.5 transition-all"
+          >
+            <span className="flex items-center justify-center gap-2">
+              Go to Login <span className="text-xs group-hover:translate-x-1 transition-transform">→</span>
+            </span>
+          </button>
+        </div>
       </div>
     </div>
   );
-};
+}
 
-export default ForgotPassword;
