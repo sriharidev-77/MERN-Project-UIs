@@ -1,5 +1,4 @@
-
-// RestaurantRegister.jsx - WITH SUCCESS MESSAGE + REDIRECT
+// RestaurantRegister.jsx - ✅ FULLY INTEGRATED WITH YOUR BACKEND
 import { useState } from "react";
 import { FcGoogle } from "react-icons/fc";
 import { 
@@ -10,41 +9,77 @@ import {
   FaPizzaSlice, 
   FaUser,      
   FaDrumstickBite, 
-  FaHotdog     
+  FaHotdog      
 } from "react-icons/fa6";
 import { useNavigate } from "react-router-dom";
+import axios from "axios"; // ✅ NEW: Import axios
 
 export default function RestaurantRegister() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
+  const [phone, setPhone] = useState(""); // ✅ Maps to 'mobile' in backend
   const [password, setPassword] = useState("");
+  const [address1, setAddress1] = useState(""); // ✅ NEW: Required by schema
+  const [address2, setAddress2] = useState(""); // ✅ NEW: Required by schema
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [isSuccess, setIsSuccess] = useState(false); // ✅ NEW: Success state
+  const [isSuccess, setIsSuccess] = useState(false);
+  const [error, setError] = useState(""); // ✅ NEW: Error handling
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  // ✅ REAL API INTEGRATION - Maps frontend fields to backend schema
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-    
-    // Simulate API call
-    setTimeout(() => {
-      setIsLoading(false);
-      setIsSuccess(true); // ✅ Show success message
+    setError(""); // Clear previous errors
+
+    try {
+      const payload = {
+        name,           // ✅ Matches schema
+        email,          // ✅ Matches schema  
+        password,       // ✅ Gets hashed in backend
+        mobile: phone,  // ✅ Frontend 'phone' → Backend 'mobile'
+        address1,       // ✅ Matches schema
+        address2,       // ✅ Matches schema
+      };
+
+      // ✅ POST to your backend /users route
+      const response = await axios.post("http://localhost:9080/users/adduser", payload);
       
-      // ✅ Auto redirect to login after 2 seconds
+      console.log("✅ User created:", response.data);
+      
+      setIsSuccess(true); // ✅ Show success screen
+      
+      // Auto redirect to login after 2 seconds
       setTimeout(() => {
         navigate('/');
       }, 2000);
-    }, 1500);
+      
+    } catch (err) {
+      // ✅ Handle backend errors
+      console.error("❌ Registration failed:", err);
+      if (err.response?.status === 400) {
+        setError(err.response.data.message || "Registration failed");
+      } else {
+        setError("Registration failed. Please try again.");
+      }
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const goToLogin = () => {
     navigate('/');
   };
 
-  // ✅ Show success screen
+  // ✅ Show error message
+  const errorMessage = error && (
+    <div className="mb-4 p-3 bg-rose-500/10 border border-rose-400/30 rounded-xl text-rose-300 text-sm">
+      {error}
+    </div>
+  );
+
+  // ✅ Show success screen (unchanged)
   if (isSuccess) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-950 via-sky-950 to-slate-900 flex items-center justify-center px-4 py-8 relative overflow-hidden">
@@ -114,10 +149,10 @@ export default function RestaurantRegister() {
     );
   }
 
-  // ✅ FORM SCREEN (Original form)
+  // ✅ FORM SCREEN WITH NEW FIELDS + ERROR HANDLING
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-sky-950 to-slate-900 flex items-center justify-center px-4 py-8 relative overflow-hidden">
-      {/* FLOATING FOOD ICONS - EXACT SAME AS LOGIN */}
+      {/* FLOATING FOOD ICONS */}
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute top-20 left-10 animate-bounce [animation-delay:-1s] opacity-30 text-5xl text-emerald-400/50">
           <FaUtensils />
@@ -139,7 +174,7 @@ export default function RestaurantRegister() {
         </div>
       </div>
 
-      {/* ORIGINAL FORM */}
+      {/* FORM CONTAINER */}
       <div className="relative w-full max-w-6xl">
         <div className="absolute inset-0 rounded-[2.25rem] bg-gradient-to-tr from-sky-500/20 via-emerald-400/15 to-amber-400/20 blur-3xl" />
         
@@ -147,37 +182,100 @@ export default function RestaurantRegister() {
           <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(15,23,42,0.25)_0%,rgba(15,23,42,0.9)_60%,rgba(15,23,42,1)_100%)]" />
           <div className="absolute inset-0 bg-slate-950/90" />
 
-          {/* Register Form */}
+          {/* ✅ REGISTER FORM WITH ALL REQUIRED FIELDS */}
           <div className="relative px-8 py-9 md:px-10 lg:px-14 flex flex-col justify-center order-2 md:order-1">
             <header className="flex flex-col gap-2 mb-7">
               <h2 className="text-3xl font-semibold text-slate-50 mb-1">Create your account</h2>
               <p className="text-sm text-slate-300">Register to book tables and earn rewards</p>
             </header>
 
+            {/* ✅ ERROR MESSAGE */}
+            {errorMessage}
+
             <form onSubmit={handleSubmit} className="space-y-5">
+              {/* Name */}
               <div className="space-y-1.5">
                 <label className="block text-sm font-medium text-slate-100 mb-3">Full name</label>
-                <input type="text" required value={name} onChange={(e) => setName(e.target.value)} className="w-full rounded-xl border border-white/15 bg-slate-900/70 px-3 py-2.5 text-sm text-slate-50 shadow-inner placeholder:text-slate-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400" placeholder="John Doe" />
+                <input 
+                  type="text" 
+                  required 
+                  value={name} 
+                  onChange={(e) => setName(e.target.value)} 
+                  className="w-full rounded-xl border border-white/15 bg-slate-900/70 px-3 py-2.5 text-sm text-slate-50 shadow-inner placeholder:text-slate-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400" 
+                  placeholder="John Doe" 
+                />
               </div>
 
+              {/* Email */}
               <div className="space-y-1.5">
                 <label className="block text-sm font-medium text-slate-100 mb-3">Email</label>
                 <div className="relative">
                   <span className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-slate-400">@</span>
-                  <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} className="w-full rounded-xl border border-white/15 bg-slate-900/70 pl-8 pr-3 py-2.5 text-sm text-slate-50 shadow-inner placeholder:text-slate-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400" placeholder="you@example.com" />
+                  <input 
+                    type="email" 
+                    required 
+                    value={email} 
+                    onChange={(e) => setEmail(e.target.value)} 
+                    className="w-full rounded-xl border border-white/15 bg-slate-900/70 pl-8 pr-3 py-2.5 text-sm text-slate-50 shadow-inner placeholder:text-slate-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400" 
+                    placeholder="you@example.com" 
+                  />
                 </div>
               </div>
 
+              {/* ✅ NEW: Address 1 (REQUIRED BY SCHEMA) */}
               <div className="space-y-1.5">
-                <label className="block text-sm font-medium text-slate-100 mb-3">Phone</label>
-                <input type="tel" required value={phone} onChange={(e) => setPhone(e.target.value)} className="w-full rounded-xl border border-white/15 bg-slate-900/70 px-3 py-2.5 text-sm text-slate-50 shadow-inner placeholder:text-slate-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400" placeholder="+91 98765 43210" />
+                <label className="block text-sm font-medium text-slate-100 mb-3">Address Line 1</label>
+                <input 
+                  type="text" 
+                  required 
+                  value={address1} 
+                  onChange={(e) => setAddress1(e.target.value)} 
+                  className="w-full rounded-xl border border-white/15 bg-slate-900/70 px-3 py-2.5 text-sm text-slate-50 shadow-inner placeholder:text-slate-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400" 
+                  placeholder="Street, Building No." 
+                />
               </div>
 
+              {/* ✅ NEW: Address 2 (REQUIRED BY SCHEMA) */}
+              <div className="space-y-1.5">
+                <label className="block text-sm font-medium text-slate-100 mb-3">Address Line 2</label>
+                <input 
+                  type="text" 
+                  required 
+                  value={address2} 
+                  onChange={(e) => setAddress2(e.target.value)} 
+                  className="w-full rounded-xl border border-white/15 bg-slate-900/70 px-3 py-2.5 text-sm text-slate-50 shadow-inner placeholder:text-slate-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400" 
+                  placeholder="City, State, ZIP" 
+                />
+              </div>
+
+              {/* Phone → mobile */}
+              <div className="space-y-1.5">
+                <label className="block text-sm font-medium text-slate-100 mb-3">Phone</label>
+                <input 
+                  type="tel" 
+                  required 
+                  value={phone} 
+                  onChange={(e) => setPhone(e.target.value)} 
+                  className="w-full rounded-xl border border-white/15 bg-slate-900/70 px-3 py-2.5 text-sm text-slate-50 shadow-inner placeholder:text-slate-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400" 
+                  placeholder="+91 98765 43210" 
+                />
+              </div>
+
+              {/* Password */}
               <div className="space-y-1.5">
                 <label className="block text-sm font-medium text-slate-100 mb-3">Password</label>
                 <div className="relative">
-                  <input type={showPassword ? "text" : "password"} required value={password} onChange={(e) => setPassword(e.target.value)} className="w-full rounded-xl border border-white/15 bg-slate-900/70 px-3 py-2.5 pr-16 text-sm text-slate-50 shadow-inner placeholder:text-slate-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400" placeholder="••••••••" />
-                  <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute inset-y-0 right-2 flex items-center px-3 text-[11px] text-sky-200 hover:text-sky-100">{showPassword ? "Hide" : "Show"}</button>
+                  <input 
+                    type={showPassword ? "text" : "password"} 
+                    required 
+                    value={password} 
+                    onChange={(e) => setPassword(e.target.value)} 
+                    className="w-full rounded-xl border border-white/15 bg-slate-900/70 px-3 py-2.5 pr-16 text-sm text-slate-50 shadow-inner placeholder:text-slate-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400" 
+                    placeholder="••••••••" 
+                  />
+                  <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute inset-y-0 right-2 flex items-center px-3 text-[11px] text-sky-200 hover:text-sky-100">
+                    {showPassword ? "Hide" : "Show"}
+                  </button>
                 </div>
               </div>
 
@@ -186,7 +284,11 @@ export default function RestaurantRegister() {
                 <label>I agree to the <span className="text-sky-200 hover:text-sky-100 cursor-pointer">Terms & Conditions</span>.</label>
               </div>
 
-              <button type="submit" disabled={isLoading} className="group w-full rounded-xl bg-gradient-to-r from-emerald-400 via-sky-400 to-blue-500 py-2.5 text-sm font-semibold text-slate-950 shadow-lg hover:shadow-emerald-400/70 hover:-translate-y-0.5 transition-all disabled:opacity-70">
+              <button 
+                type="submit" 
+                disabled={isLoading} 
+                className="group w-full rounded-xl bg-gradient-to-r from-emerald-400 via-sky-400 to-blue-500 py-2.5 text-sm font-semibold text-slate-950 shadow-lg hover:shadow-emerald-400/70 hover:-translate-y-0.5 transition-all disabled:opacity-70"
+              >
                 <span className="flex items-center justify-center gap-2">
                   {isLoading ? (
                     <>
@@ -223,7 +325,7 @@ export default function RestaurantRegister() {
             </p>
           </div>
 
-          {/* Hero Image Side */}
+          {/* Hero Image Side - UNCHANGED */}
           <div className="relative h-72 md:h-full order-1 md:order-2">
             <img src="https://images.pexels.com/photos/262978/pexels-photo-262978.jpeg" alt="Chef plating gourmet dishes" className="h-full w-full object-cover" />
             <div className="absolute inset-0 bg-gradient-to-l from-slate-950/90 via-slate-950/65 to-sky-900/40" />
