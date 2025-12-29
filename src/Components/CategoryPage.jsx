@@ -105,20 +105,20 @@ const MENU_SECTIONS = [
   },
   {
     id: "drinks",
-    name: "Refreshments",
+    name: "Vegan",
     image:
       "https://images.pexels.com/photos/1092730/pexels-photo-1092730.jpeg?auto=compress&cs=tinysrgb&w=400",
-    description: "Refreshing beverages",
+    description: "Vegans",
     itemCount: 1,
     color: "from-blue-500 to-cyan-500",
     icon: "🥤"
   },
   {
     id: "cake",
-    name: "Desserts",
+    name: "Jain",
     image:
       "https://images.pexels.com/photos/2067396/pexels-photo-2067396.jpeg?auto=compress&cs=tinysrgb&w=400",
-    description: "Sweet dessert treats",
+    description: "Jain",
     itemCount: 1,
     color: "from-pink-500 to-rose-500",
     icon: "🍰"
@@ -379,13 +379,13 @@ const CategoryPage = () => {
 
           {/* Navigation Pills */}
           <nav className="space-y-1 mb-auto">
-            <NavButton 
+            {/* <NavButton 
               label="All Dishes" 
               icon={FiGrid}
               color="from-emerald-500 to-teal-600"
               isActive={activeView === "all" && !showSectionItems && !userViewOpen}
               onClick={() => { setActiveView("all"); setShowSectionItems(false); setUserViewOpen(false); }}
-            />
+            /> */}
             <NavButton 
               label="Menu" 
               icon={FiBookOpen}
@@ -394,7 +394,7 @@ const CategoryPage = () => {
               onClick={() => { setActiveView("menu"); setShowSectionItems(false); setUserViewOpen(false); }}
             />
             <NavButton 
-              label="Orders" 
+              label="Your Cart" 
               icon={FiShoppingBag}
               color="from-amber-500 to-orange-600"
               isActive={activeView === "orders" && !userViewOpen}
