@@ -11,7 +11,7 @@ import {
   FaDrumstickBite, 
   FaHotdog      
 } from "react-icons/fa6";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios"; // ✅ NEW: Import axios
 
 export default function RestaurantLogin() {
@@ -118,7 +118,7 @@ export default function RestaurantLogin() {
                     <span>Open • 11:00 AM – 11:00 PM</span>
                   </div>
                 </div>
-                <h1 className="text-3xl mb-6 md:text-4xl lg:text-5xl font-semibold leading-tight">Bistro Bliss</h1>
+                <h1 className="text-3xl mb-6 md:text-4xl lg:text-5xl font-semibold leading-tight">SKYBOWL</h1>
                 <p className="text-sm md:text-base mb-3 text-slate-100/85">Food is the only language that everyone understands.</p>
               </div>
               <div className="space-y-3 hidden sm:block">
@@ -176,7 +176,12 @@ export default function RestaurantLogin() {
                   <input type="checkbox" className="h-4 w-4 rounded border-slate-400/50 bg-slate-900/70 text-sky-400" />
                   <span>Remember me</span>
                 </label>
-                <button type="button" className="text-sky-200 hover:text-sky-100 font-medium">Forgot password?</button>
+                <Link
+  to="/forget-password"
+  className="text-sky-200 hover:text-sky-100 font-medium"
+>
+  Forgot password?
+</Link>
               </div>
 
               <button type="submit" disabled={isLoading} className="group w-full rounded-xl bg-gradient-to-r from-sky-400 via-blue-500 to-emerald-400 py-2.5 text-sm font-semibold text-slate-950 shadow-lg hover:shadow-sky-400/70 hover:-translate-y-0.5 transition-all disabled:opacity-70">

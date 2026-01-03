@@ -92,7 +92,7 @@ export default function RestaurantForgetPassword() {
   // STEP 1: EMAIL INPUT (UI remains as you designed)
 if (step === 1) {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-sky-950 to-slate-900 flex items-center justify-center px-4 py-8 relative overflow-hidden">
+    <div className="min-h-screen bg-linear-to-br from-slate-950 via-sky-950 to-slate-900 flex items-center justify-center px-4 py-8 relative overflow-hidden">
       {/* <div className="absolute inset-0 pointer-events-none">
         {securityIcons.map((iconProps, i) => (
           <div key={i} className={`absolute ${iconProps.pos} ${iconProps.anim} [animation-delay:${iconProps.delay}] opacity-30 ${iconProps.color} ${iconProps.size}`}>
@@ -102,7 +102,7 @@ if (step === 1) {
       </div> */}
 
       <div className="relative w-full max-w-6xl z-10">
-        <div className="absolute inset-0 rounded-[2.25rem] bg-gradient-to-tr from-sky-500/20 via-emerald-400/15 to-amber-400/20 blur-3xl" />
+        <div className="absolute inset-0 rounded-[2.25rem] bg-linear-to-tr from-sky-500/20 via-emerald-400/15 to-amber-400/20 blur-3xl" />
         
         <div className="relative bg-slate-900/80 border border-white/10 rounded-[2.25rem] overflow-hidden shadow-[0_40px_120px_rgba(0,0,0,0.85)] grid md:grid-cols-2 min-h-[520px]">
           <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(15,23,42,0.25)_0%,rgba(15,23,42,0.9)_60%,rgba(15,23,42,1)_100%)]" />
@@ -115,7 +115,7 @@ if (step === 1) {
               alt="Secure recovery interface" 
               className="h-full w-full object-cover" 
             />
-            <div className="absolute inset-0 bg-gradient-to-r from-slate-950/85 via-slate-950/70 to-transparent" />
+            <div className="absolute inset-0 bg-linear-to-r from-slate-950/85 via-slate-950/70 to-transparent" />
             <div className="absolute inset-0 flex flex-col justify-between p-8 md:p-10 lg:p-14 text-white">
               <div className="space-y-4 max-w-md text-center sm:text-left">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
@@ -140,7 +140,7 @@ if (step === 1) {
           {/* ✅ RIGHT SIDE: Your Existing Form (Enhanced Styling) */}
           <div className="px-8 py-9 md:px-14 lg:px-16 flex flex-col justify-center relative z-10">
             <div className="text-center mb-8 md:mb-0 md:text-left">
-              <h2 className="text-3xl md:text-4xl font-semibold text-slate-50 mb-4 bg-gradient-to-r from-slate-50 to-emerald-100 bg-clip-text text-transparent">
+              <h2 className="text-3xl md:text-4xl font-semibold text-transparent mb-4 bg-linear-to-r from-slate-50 to-emerald-100 bg-clip-text text-transparent">
                 Forgot Password?
               </h2>
               <p className="text-slate-400 text-sm md:text-base max-w-md mx-auto md:mx-0">
@@ -170,7 +170,7 @@ if (step === 1) {
               <button 
                 type="submit" 
                 disabled={isLoading} 
-                className="group w-full bg-gradient-to-r from-emerald-500 to-emerald-600 p-4 rounded-2xl font-bold text-lg shadow-lg hover:shadow-emerald-500/25 hover:from-emerald-600 hover:to-emerald-700 focus:outline-none focus:ring-4 focus:ring-emerald-400/30 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:from-emerald-400"
+                className="group w-full bg-linear-to-r from-emerald-500 to-emerald-600 p-4 rounded-2xl font-bold text-lg shadow-lg hover:shadow-emerald-500/25 hover:from-emerald-600 hover:to-emerald-700 focus:outline-none focus:ring-4 focus:ring-emerald-400/30 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:from-emerald-400"
               >
                 <span className="flex items-center justify-center gap-2">
                   {isLoading ? (
@@ -209,8 +209,8 @@ if (step === 1) {
   // STEP 2: OTP VERIFICATION
   if (step === 2) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-950 via-sky-950 to-slate-900 flex items-center justify-center px-4">
-        <div className="bg-slate-900 p-10 rounded-[2rem] border border-emerald-400/50 w-full max-w-md">
+      <div className="min-h-screen bg-linear-to-br from-slate-950 via-sky-950 to-slate-900 flex items-center justify-center px-4">
+        <div className="bg-slate-900 p-10 rounded-4xl border border-emerald-400/50 w-full max-w-md">
           <h2 className="text-2xl text-white font-bold text-center mb-6">Verify OTP</h2>
           {error && <p className="text-rose-400 text-center mb-4">{error}</p>}
           <form onSubmit={handleVerifyOTP} className="space-y-6">
